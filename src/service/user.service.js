@@ -50,10 +50,3 @@ module.exports = {
   saveOne,
   getUserById,
 };
-
-module.exports = {
-  getAll,
-  getOne,
-  saveOne,
-  getUserById,
-};
