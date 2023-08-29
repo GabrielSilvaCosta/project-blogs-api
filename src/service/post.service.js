@@ -46,8 +46,33 @@ const createPost = async ({ userId, title, content, categoryIds }) => {
   }
 };
 
+const editOne = async ({ userId, postId, title, content }) => {
+  const blogPost = await BlogPost.findOne({ where: { id: postId, userId } });
+
+  if (!blogPost) {
+    return { error: new Error('Unauthorized user'), status: 401 };
+  }
+
+  if (!title || !content) {
+    return { error: new Error('Some required fields are missing'), status: 400 };
+  }
+
+  await blogPost.update({ title, content });
+
+  const updatedBlogPost = await BlogPost.findOne({
+    where: { id: postId },
+    include: [
+      { model: User, as: 'user', attributes: ['id', 'displayName', 'email', 'image'] },
+      { model: Category, as: 'categories', attributes: ['id', 'name'] },
+    ],
+  });
+
+  return updatedBlogPost;
+};
+
 module.exports = {
   getAllPosts,
   getBlogPostById,
   createPost,
+  editOne,
 };
