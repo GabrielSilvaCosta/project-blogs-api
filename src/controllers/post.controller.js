@@ -31,7 +31,12 @@ const getAllPosts = async (req, res) => {
 const getOnePost = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   try {
-    const blogPost = await blogPostService.getPostById(id);
+    const blogPost = await blogPostService.getBlogPostById(id);
+    
+    if (blogPost.error) {
+      return res.status(blogPost.status).json({ message: blogPost.error.message });
+    }
+
     return res.status(200).json(blogPost);
   } catch (error) {
     return res.status(error.code || 500).json({ message: error.message });

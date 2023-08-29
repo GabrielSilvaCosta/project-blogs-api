@@ -1,15 +1,23 @@
-const { BlogPost, Category, PostCategory, sequelize } = require('../models');
+const { BlogPost, Category, PostCategory, User, sequelize } = require('../models');
 
 const getAllPosts = async (options) => {
   const blogPosts = await BlogPost.findAll(options);
   return blogPosts;
 };
 
-const getPostById = async (id) => {
-  const blogPost = await BlogPost.findOne({ where: { id } });
+const getBlogPostById = async (id) => {
+  const blogPost = await BlogPost.findOne({
+    where: { id },
+    include: [
+      { model: User, as: 'user', attributes: ['id', 'displayName', 'email', 'image'] },
+      { model: Category, as: 'categories', attributes: ['id', 'name'] },
+    ],
+  });
+
   if (!blogPost) {
-    return { error: new Error('BlogPost does not exist'), status: 404 };
+    return { error: new Error('Post does not exist'), status: 404 };
   }
+
   return blogPost;
 };
 
@@ -40,6 +48,6 @@ const createPost = async ({ userId, title, content, categoryIds }) => {
 
 module.exports = {
   getAllPosts,
-  getPostById,
+  getBlogPostById,
   createPost,
 };
